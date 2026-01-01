@@ -35,7 +35,7 @@ python src/main.py
 ## 🎬 Résultat (Démo)
 
 Vous pouvez voir un exemple de vidéo générée ici :
-[Voir le récapitulatif généré](output/final_recap.mp4)
+[Voir le récapitulatif généré](output/boruto-two-blue-vortex-chap28_recap.mp4)
 
 Le dossier `output/` contient les vidéos finales avec :
 -   Zoom "Infini"
