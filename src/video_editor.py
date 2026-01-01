@@ -1,6 +1,6 @@
 import os
 import math
-from moviepy import ImageClip, AudioFileClip, concatenate_videoclips, CompositeVideoClip, ColorClip, VideoFileClip
+from moviepy import ImageClip, AudioFileClip, concatenate_videoclips, CompositeVideoClip, ColorClip, VideoFileClip, CompositeAudioClip
 from moviepy.video.fx import FadeIn
 from typing import List, Tuple
 
@@ -20,17 +20,48 @@ class VideoEditor:
         """
         video_clips = []
         
+        # Prepare Background Music Library
+        music_dir = "assets/music"
+        
         for batch in batches:
             aud_path = batch['audio_path']
             items = batch['items']
+            mood = batch.get('mood', 'Neutral')
             
             if not os.path.exists(aud_path):
                 print(f"Warning: Skipping batch, missing audio: {aud_path}")
                 continue
 
-            # Load full audio
-            full_audio = AudioFileClip(aud_path)
-            total_duration = full_audio.duration
+            # Load full audio (Voice)
+            voice_audio = AudioFileClip(aud_path)
+            total_duration = voice_audio.duration
+            
+            # --- BACKGROUND MUSIC MIXING ---
+            bg_music = None
+            music_file = os.path.join(music_dir, f"{mood}.mp3")
+            
+            # Fallback to Neutral/Action if specific mood missing, or None
+            if not os.path.exists(music_file):
+                 music_file = os.path.join(music_dir, "Neutral.mp3")
+            
+            if os.path.exists(music_file):
+                try:
+                    music = AudioFileClip(music_file)
+                    # Loop if music is shorter than extraction
+                    if music.duration < total_duration:
+                        music = concatenate_videoclips([music] * (int(total_duration / music.duration) + 1)).audio
+                    
+                    music = music.subclipped(0, total_duration)
+                    # Ducking: Voice 100%, Music 20%
+                    music = music.with_volume_scaled(0.20)
+                    
+                    # Mix voice and music
+                    full_audio = CompositeAudioClip([voice_audio, music])
+                except Exception as e:
+                    print(f"Error loading music {music_file}: {e}")
+                    full_audio = voice_audio
+            else:
+                full_audio = voice_audio
             
             # Equal distribution of duration
             num_images = len(items)

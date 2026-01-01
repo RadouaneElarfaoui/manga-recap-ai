@@ -20,6 +20,29 @@ Il vous suffit de lancer la commande suivante :
 python src/main.py
 ```
 
+### 📂 Exemple de Données
+
+Le projet inclut des fichiers d'exemple pour vous permettre de tester rapidement :
+*   `docs/boruto-two-blue-vortex-chap28.pdf` : Un chapitre de manga complet pour tester l'analyse.
+*   `assets/music/` : Dossier pour vos MP3 (Action, Sad, etc.).
+
+Pour lancer un test avec ce fichier :
+```bash
+python src/main.py
+# Entrez: docs/boruto-two-blue-vortex-chap28.pdf
+```
+
+## 🎬 Résultat (Démo)
+
+Vous pouvez voir un exemple de vidéo générée ici :
+[Voir le récapitulatif généré](output/final_recap.mp4)
+
+Le dossier `output/` contient les vidéos finales avec :
+-   Zoom "Infini"
+-   Fond flou
+-   Musique d'ambiance mixée
+-   Narration en Arabe
+
 ### Étapes automatiques
 1.  **Analyse** : L'IA extrait les images du PDF et écrit le script.
 2.  **Synthèse Vocale** : L'IA génère automatiquement les fichiers audio avec le ton approprié (plus besoin d'AI Studio).

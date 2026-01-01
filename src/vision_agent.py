@@ -19,7 +19,7 @@ class VisionAgent:
         # Using gemini-flash-latest as requested
         self.model_id = "gemini-flash-latest" 
 
-    def analyze_pdf(self, pdf_path: str) -> list:
+    def analyze_pdf(self, pdf_path: str, story_context: str = "") -> list:
         """
         Analyzes the entire PDF to generate a segmented narrative script.
         Returns a list of segments: [{'pages': [1, 2], 'script': '...', 'style': '...'}]
@@ -28,9 +28,21 @@ class VisionAgent:
         file_ref = self._upload_file(pdf_path)
         
         print("Analyzing PDF content (this may take a minute)...")
-        prompt = """
+        
+        context_block = ""
+        if story_context:
+            context_block = f"""
+            IMPORTANT CONTEXT FROM WEB (Use this to correctly identify characters and plot points):
+            {story_context}
+            ---------------------------------------------------
+            """
+
+        prompt_intro = f"""
         You are a professional YouTube Manga Recap scriptwriter targeting an ARABIC-speaking audience. 
         Read this entire manga chapter. 
+        
+        {context_block}
+        
         Break the story down into NARRATIVE SEGMENTS (scenes).
         
         For EACH segment, write a script in ARABIC (Modern Standard Arabic or a natural mixed style used by YouTubers):
@@ -40,19 +52,26 @@ class VisionAgent:
            - Identify ALL main characters by their names (e.g., بوروتو، شيكامارو).
            - Explicitly summarize key dialogues and interactions.
            - Use a gripping, narrative tone in Arabic. Tell the story like you are explaining it to an audience who can't see the text.
-        4. "style_instructions": Instructions for the voice actor in English (e.g., "Deep, serious Arabic tone", "Excited narration").
+        4. "mood": classify the scene into one of: ["Action", "Suspense", "Sad", "Happy", "Neutral"].
+        5. "style_instructions": Instructions for the voice actor in English.
         
         RETURN JSON ONLY:
+        """
+        
+        json_template = """
         [
             {
                 "start_page": 1,
                 "end_page": 2,
                 "script": "...",
+                "mood": "Action",
                 "style_instructions": "..."
             },
             ...
         ]
         """
+        
+        prompt = prompt_intro + json_template
 
         try:
             response = self.client.models.generate_content(

@@ -5,6 +5,7 @@ from pdf_processor import PDFProcessor
 from vision_agent import VisionAgent
 from audio_generator import AudioGenerator
 from video_editor import VideoEditor
+from context_agent import ContextAgent
 
 def main():
     print("=== Manga Recap Generator (Fully Automated) ===")
@@ -18,13 +19,28 @@ def main():
     processor = PDFProcessor()
     image_paths = processor.extract_images(pdf_path)
     
-    # 2. Analyze PDF with Gemini (Full Context)
+    # 2. Analyze PDF with Gemini (Full Context + Smart Web Context)
     vision_agent = VisionAgent()
     audio_gen = AudioGenerator()
+    context_agent = ContextAgent()
+    
+    # --- SMART CONTEXT FETCHING ---
+    context_text = ""
+    if context_agent.client:
+        # Derive query from filename (e.g. "chapetre-28.pdf" -> "chapetre-28 summary")
+        # Better: user should name file "Boruto_Chapter_28.pdf"
+        base_name = os.path.basename(pdf_path).replace(".pdf", "").replace("_", " ").replace("-", " ")
+        query = f"{base_name} manga chapter summary plot characters"
+        print(f"\n[Smart Context] Searching for: '{query}'...")
+        context_text = context_agent.get_context(query)
+        if context_text:
+            print(f"[Smart Context] Found external context ({len(context_text)} chars).")
+        else:
+            print("[Smart Context] No context found or API missing.")
     
     print("\nStarting AI Analysis of the PDF...")
     try:
-        segments = vision_agent.analyze_pdf(pdf_path)
+        segments = vision_agent.analyze_pdf(pdf_path, story_context=context_text)
     except Exception as e:
         print(f"Critical Error during analysis: {e}")
         return
@@ -43,8 +59,9 @@ def main():
         end_page = seg.get('end_page', 1)
         script = seg.get('script', "")
         style = seg.get('style_instructions', "")
+        mood = seg.get('mood', "Neutral")
         
-        print(f"Processing Segment {i+1}: Pages {start_page}-{end_page}")
+        print(f"Processing Segment {i+1}: Pages {start_page}-{end_page} [{mood}]")
         
         # Identify corresponding images (1-based index to 0-based list)
         # Ensure indices are within bounds
@@ -80,7 +97,8 @@ def main():
             batches_data.append({
                 "audio_path": audio_path,
                 "items": batch_items,
-                "segment_script": script
+                "segment_script": script,
+                "mood": mood
             })
             
             # Higher delay for TTS API to respect quotas

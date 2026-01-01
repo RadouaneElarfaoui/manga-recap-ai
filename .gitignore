@@ -1,8 +1,17 @@
-venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
 .env
 .DS_Store
-output/
-*.whl
-*.wav
+
+# Temporary processing files (keep these ignored to save space)
+*_recapTEMP_*
+
+# BUT ALLOW Output and Data for Demo purposes
+# (User wants to keep outputs to show in README)
+# !output/
+# !data/
