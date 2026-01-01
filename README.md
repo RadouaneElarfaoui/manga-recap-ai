@@ -49,3 +49,15 @@ Le dossier `output/` contient les vidéos finales avec :
 3.  **Montage** : Le script assemble les images et les audios pour créer la vidéo finale.
 
 Le résultat final sera disponible dans le dossier `output/`.
+
+---
+
+## 💭 Note Personnelle (Clôture 2025)
+
+Ce projet marque pour moi la fin de l'année 2025, et c'est une conclusion symbolique forte.
+
+En développant cet outil, j'ai été sincèrement **bluffé** par les capacités actuelles de l'IA. Voir une machine comprendre non seulement le texte, mais aussi l'essence visuelle et la narration d'un manga pour produire une vidéo complète, est une expérience qui dépasse mes attentes initiales.
+
+Ce projet n'est pas juste du code ; c'est la preuve tangible que nous entrons dans une nouvelle ère. Je suis extrêmement optimiste et impatient de voir ce que les modèles de langage (LLM) nous réservent pour les années à venir. La collaboration homme-machine ne fait que commencer.
+
+*Fait avec ❤️ et beaucoup de curiosité.*
